@@ -12,6 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+# Update by Justin Brûlotte - 2017
 
 import pandas as pd
 from sklearn.cross_validation import train_test_split

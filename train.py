@@ -12,6 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+# Update by Justin Brûlotte - 2017
 
 from tsa.data_manager import DataManager
 from tsa.neural_network import NeuralNetwork
@@ -59,8 +61,8 @@ FLAGS = tf.flags.FLAGS
 # Prepare summaries
 summaries_dir = '{0}/{1}'.format(FLAGS.summaries_dir,
                                  datetime.datetime.now().strftime('%d_%b_%Y-%H_%M_%S'))
-train_writer = tf.train.SummaryWriter(summaries_dir + '/train')
-validation_writer = tf.train.SummaryWriter(summaries_dir + '/validation')
+train_writer = tf.summary.FileWriter(summaries_dir + '/train')
+validation_writer = tf.summary.FileWriter(summaries_dir + '/validation')
 
 # Prepare model directory
 model_name = str(int(time.time()))

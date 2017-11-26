@@ -12,6 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+# Update by Justin Brûlotte - 2017
 
 import tensorflow as tf
 
@@ -42,7 +44,7 @@ class NeuralNetwork(object):
         self.loss = self.__loss(self.losses)
         self.train_step = self.__train_step(learning_rate, self.loss)
         self.accuracy = self.__accuracy(self.predict, self.target)
-        self.merged = tf.merge_all_summaries()
+        self.merged = tf.summary.merge_all()
 
     def __input(self, max_length):
         """
@@ -147,7 +149,7 @@ class NeuralNetwork(object):
             self.variable_summaries(b, 'final_layer/biases')
         with tf.name_scope('final_layer/wx_plus_b'):
             scores = tf.nn.xw_plus_b(outputs, w, b, name='scores')
-            tf.histogram_summary('final_layer/wx_plus_b', scores)
+            tf.summary.histogram('final_layer/wx_plus_b', scores)
         return scores
 
     def __predict(self, scores):
@@ -157,7 +159,7 @@ class NeuralNetwork(object):
         """
         with tf.name_scope('final_layer/softmax'):
             softmax = tf.nn.softmax(scores, name='predictions')
-            tf.histogram_summary('final_layer/softmax', softmax)
+            tf.summary.histogram('final_layer/softmax', softmax)
         return softmax
 
     def __losses(self, scores, target):
@@ -167,7 +169,7 @@ class NeuralNetwork(object):
         :return: Cross entropy losses with shape [batch_size]
         """
         with tf.name_scope('cross_entropy'):
-            cross_entropy = tf.nn.softmax_cross_entropy_with_logits(scores, target, name='cross_entropy')
+            cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits = scores, labels = target, name = 'cross_entropy')
         return cross_entropy
 
     def __loss(self, losses):
@@ -177,7 +179,7 @@ class NeuralNetwork(object):
         """
         with tf.name_scope('loss'):
             loss = tf.reduce_mean(losses, name='loss')
-            tf.scalar_summary('loss', loss)
+            tf.summary.scalar('loss', loss)
         return loss
 
     def __train_step(self, learning_rate, loss):
@@ -197,7 +199,7 @@ class NeuralNetwork(object):
         with tf.name_scope('accuracy'):
             correct_pred = tf.equal(tf.argmax(predict, 1), tf.argmax(target, 1))
             accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32), name='accuracy')
-            tf.scalar_summary('accuracy', accuracy)
+            tf.summary.scalar('accuracy', accuracy)
         return accuracy
 
     def initialize_all_variables(self):
@@ -216,10 +218,10 @@ class NeuralNetwork(object):
         """
         with tf.name_scope('summaries'):
             mean = tf.reduce_mean(var)
-            tf.scalar_summary('mean/' + name, mean)
+            tf.summary.scalar('mean/' + name, mean)
             with tf.name_scope('stddev'):
                 stddev = tf.sqrt(tf.reduce_mean(tf.square(var - mean)))
-            tf.scalar_summary('stddev/' + name, stddev)
-            tf.scalar_summary('max/' + name, tf.reduce_max(var))
-            tf.scalar_summary('min/' + name, tf.reduce_min(var))
-            tf.histogram_summary(name, var)
+            tf.summary.scalar('stddev/' + name, stddev)
+            tf.summary.scalar('max/' + name, tf.reduce_max(var))
+            tf.summary.scalar('min/' + name, tf.reduce_min(var))
+            tf.summary.histogram(name, var)
